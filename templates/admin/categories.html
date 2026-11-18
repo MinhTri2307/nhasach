@@ -1,0 +1,95 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Danh mục sách{% endblock %}
+{% block page_title %}Danh mục sách ({{ rows | length }}){% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                {% if rows %}
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên danh mục</th>
+                                <th class="text-end">Số sách</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category, count in rows %}
+                            <tr class="{{ 'table-active' if editing and editing.id == category.id else '' }}">
+                                <td>
+                                    <a class="text-decoration-none"
+                                       href="{{ url_for('admin_books.book_list', category=category.id) }}">{{ category.name }}</a>
+                                </td>
+                                <td class="text-end">{{ count }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <a class="text-decoration-none"
+                                           href="{{ url_for('admin_categories.category_list', category_id=category.id) }}">Sửa</a>
+                                        {% if count > 0 %}
+                                            <button type="button" class="btn btn-link p-0 text-secondary text-decoration-none" disabled
+                                                    title="Danh mục còn {{ count }} sách">Xoá</button>
+                                        {% else %}
+                                            <form method="post" action="{{ url_for('admin_categories.category_delete', category_id=category.id) }}"
+                                                  onsubmit="return confirm('Xoá danh mục &quot;{{ category.name | e }}&quot;?');">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" class="btn btn-link p-0 text-danger text-decoration-none">Xoá</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <p class="text-muted mb-0">Chưa có danh mục nào.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">{{ 'Sửa danh mục' if editing else 'Thêm danh mục' }}</h6>
+
+                <form method="post" novalidate
+                      action="{{ url_for('admin_categories.category_list', category_id=editing.id) if editing else url_for('admin_categories.category_list') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }} <span class="text-danger">*</span>
+                        {{ form.name(class="form-control" ~ (" is-invalid" if form.name.errors else "")) }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control" ~ (" is-invalid" if form.description.errors else ""), rows=4) }}
+                        {% for error in form.description.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            {{ 'Lưu' if editing else '+ Thêm' }}
+                        </button>
+                        {% if editing %}
+                            <a class="btn btn-outline-primary" href="{{ url_for('admin_categories.category_list') }}">Huỷ</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,181 @@
+.navbar-song-huong {
+    background-color: #0b3d7a;
+}
+
+.cart-badge {
+    background-color: #f97316;
+}
+
+.cover-box {
+    background-color: #e5e9f0;
+    color: #8a94a6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.cover-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cover-sm {
+    height: 140px;
+    border-radius: 6px 6px 0 0;
+}
+
+.cover-lg {
+    height: 340px;
+    border-radius: 8px;
+}
+
+.price {
+    color: #ea580c;
+    font-weight: 700;
+}
+
+.book-title {
+    text-decoration: none;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.book-title:hover {
+    color: #0b3d7a;
+}
+
+.qty-input {
+    width: 70px;
+    text-align: center;
+}
+
+/* ---------- Trang quản trị ---------- */
+
+.admin-wrap {
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background-color: #1e293b;
+    color: #e2e8f0;
+}
+
+.admin-nav-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    color: #cbd5e1;
+    text-decoration: none;
+}
+
+.admin-nav-link:hover,
+.admin-nav-link.active {
+    background-color: #0f172a;
+    color: #ffffff;
+}
+
+.admin-back {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.stat-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    height: 100%;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.st-pending {
+    background-color: #ffedd5;
+    color: #c2410c;
+}
+
+.st-shipping {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.st-done {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.st-cancelled {
+    background-color: #e5e7eb;
+    color: #4b5563;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 120px;
+}
+
+.bar-col {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
+.bar {
+    width: 100%;
+    min-height: 2px;
+    background-color: #3b82f6;
+    border-radius: 3px 3px 0 0;
+}
+
+.bar-labels {
+    display: flex;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: #64748b;
+    text-align: center;
+}
+
+.bar-labels span {
+    flex: 1;
+}
+
+.cover-thumb {
+    width: 40px;
+    height: 50px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    font-size: 0;
+}
+
+.cover-preview {
+    height: 260px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Không tìm thấy trang{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4">404</h1>
+    <p class="lead">Trang bạn tìm không tồn tại.</p>
+    <a class="btn btn-primary" href="{{ url_for('shop.book_list') }}">Về danh sách sách</a>
+</div>
+{% endblock %}

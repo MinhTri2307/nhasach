@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="{{ url_for('shop.book_list') }}">Sách</a></li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for('shop.book_list', category=book.category_id) }}">{{ book.category.name }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ book.title }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="cover-box cover-lg">
+            {% if book.cover %}
+                <img src="{{ url_for('static', filename='uploads/' ~ book.cover) }}" alt="{{ book.title }}">
+            {% else %}
+                <span>Ảnh bìa</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h2>{{ book.title }}</h2>
+        <p class="text-muted mb-1">
+            Tác giả: {{ book.author }}
+            {% if book.publisher %} · {{ book.publisher }}{% endif %}
+            {% if book.year %}, {{ book.year }}{% endif %}
+        </p>
+        <p class="price fs-3 mb-1">{{ book.price | vnd }}</p>
+        <p class="mb-1">Danh mục: {{ book.category.name }}</p>
+        <p class="mb-3">
+            {% if book.stock > 0 %}
+                <span class="text-success">● Còn {{ book.stock }} cuốn</span>
+            {% else %}
+                <span class="text-danger">● Hết hàng</span>
+            {% endif %}
+        </p>
+        <p>{{ book.description }}</p>
+
+        {% if book.stock <= 0 %}
+            <button class="btn btn-secondary" disabled>Hết hàng</button>
+        {% elif max_qty <= 0 %}
+            <div class="alert alert-warning">
+                Bạn đã có {{ in_cart }} cuốn trong giỏ, bằng số lượng tồn kho.
+            </div>
+        {% else %}
+            <form method="post" action="{{ url_for('shop.cart_add', book_id=book.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ url_for('shop.book_detail', book_id=book.id) }}">
+                <label for="qty" class="form-label">Số lượng</label>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <button type="button" class="btn btn-outline-primary" id="qty-minus">−</button>
+                    <input type="number" id="qty" name="quantity" value="1" class="form-control qty-input" data-max="{{ max_qty }}">
+                    <button type="button" class="btn btn-outline-primary" id="qty-plus">+</button>
+                    <small class="text-muted">tối đa {{ max_qty }} (đã có {{ in_cart }} trong giỏ)</small>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">🛒 Thêm vào giỏ hàng</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if book.stock > 0 and max_qty > 0 %}
+<script>
+    const qty = document.getElementById("qty");
+    const maxQty = parseInt(qty.dataset.max);
+
+    document.getElementById("qty-minus").addEventListener("click", function () {
+        const current = parseInt(qty.value) || 1;
+        qty.value = Math.max(1, current - 1);
+    });
+
+    document.getElementById("qty-plus").addEventListener("click", function () {
+        const current = parseInt(qty.value) || 1;
+        qty.value = Math.min(maxQty, current + 1);
+    });
+</script>
+{% endif %}
+{% endblock %}

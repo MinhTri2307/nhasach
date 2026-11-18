@@ -1,0 +1,105 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Đơn hàng{% endblock %}
+{% block page_title %}Đơn hàng{% endblock %}
+
+{% block content %}
+<ul class="nav nav-pills gap-1 mb-3">
+    <li class="nav-item">
+        <a class="nav-link py-1 {{ 'active' if not status else '' }}"
+           href="{{ url_for('admin_orders.order_list', q=q or None) }}">Tất cả ({{ total_all }})</a>
+    </li>
+    {% for s in statuses %}
+    <li class="nav-item">
+        <a class="nav-link py-1 {{ 'active' if status == s else '' }}"
+           href="{{ url_for('admin_orders.order_list', status=s, q=q or None) }}">{{ s }} ({{ counts.get(s, 0) }})</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<form class="row g-2 mb-3" method="get" action="{{ url_for('admin_orders.order_list') }}">
+    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+    <div class="col">
+        <input type="text" name="q" value="{{ q }}" class="form-control"
+               placeholder="Mã đơn, tên khách hàng, số điện thoại...">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary px-4">Tìm</button>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if orders %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-2">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Ngày đặt</th>
+                        <th>Khách hàng</th>
+                        <th>Điện thoại</th>
+                        <th class="text-end">Tổng tiền</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="order-row" data-href="{{ url_for('admin_orders.order_detail', order_id=order.id) }}">
+                        <td class="fw-semibold">
+                            <a class="text-decoration-none"
+                               href="{{ url_for('admin_orders.order_detail', order_id=order.id) }}">#{{ order.id }}</a>
+                        </td>
+                        <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ order.customer_name }}</td>
+                        <td>{{ order.phone }}</td>
+                        <td class="text-end">{{ order.total | vnd }}</td>
+                        <td>
+                            <span class="status-pill {{ order.status | status_class }}">{{ order.status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center border-top pt-2">
+            <span class="small">{{ summary_count }} đơn · tổng giá trị</span>
+            <span class="price">{{ summary_total | vnd }}</span>
+        </div>
+        <div class="small text-muted mb-2">Bấm vào một dòng để xem chi tiết đơn hàng.</div>
+
+        {% if pagination.pages > 1 %}
+        <nav aria-label="Phân trang">
+            <ul class="pagination pagination-sm mb-0">
+                {% for p in pagination.iter_pages() %}
+                    {% if p %}
+                    <li class="page-item {{ 'active' if p == pagination.page else '' }}">
+                        <a class="page-link"
+                           href="{{ url_for('admin_orders.order_list', page=p, status=status or None, q=q or None) }}">{{ p }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+            <p class="text-muted mb-0">Không có đơn hàng phù hợp.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelectorAll("tr.order-row").forEach(function (row) {
+        row.style.cursor = "pointer";
+        row.addEventListener("click", function (event) {
+            if (event.target.closest("a")) return;
+            window.location.href = row.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Tổng quan{% endblock %}
+{% block page_title %}Tổng quan{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-label">Đầu sách</div>
+            <div class="stat-value">{{ book_count }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-label">Đơn chờ xác nhận</div>
+            <div class="stat-value text-warning">{{ pending }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-label">Doanh thu tháng {{ month }}</div>
+            <div class="stat-value text-success fs-4">{{ revenue | vnd }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-label">Sắp hết hàng</div>
+            <div class="stat-value text-danger">{{ low_count }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">Đơn hàng mới nhất</h6>
+                {% if latest_orders %}
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-2">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã</th>
+                                <th>Khách hàng</th>
+                                <th class="text-end">Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in latest_orders %}
+                            <tr>
+                                <td><a href="{{ url_for('admin_orders.order_detail', order_id=order.id) }}">#{{ order.id }}</a></td>
+                                <td>{{ order.customer_name }}</td>
+                                <td class="text-end">{{ order.total | vnd }}</td>
+                                <td>
+                                    <span class="status-pill {{ order.status | status_class }}">{{ order.status }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <p class="text-muted">Chưa có đơn hàng nào.</p>
+                {% endif %}
+                <a href="{{ url_for('admin_orders.order_list') }}" class="small">Xem tất cả đơn hàng →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">Sắp hết hàng (≤ {{ low }})</h6>
+                {% if low_books %}
+                    {% for book in low_books %}
+                    <div class="d-flex justify-content-between small mb-2">
+                        <a class="text-decoration-none" href="{{ url_for('admin_books.book_form', book_id=book.id) }}">{{ book.title }}</a>
+                        <span class="fw-bold {{ 'text-danger' if book.stock == 0 else 'text-warning' }}">{{ book.stock }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted small mb-2">Không có sách nào sắp hết.</p>
+                {% endif %}
+                <a href="{{ url_for('admin_books.book_list') }}" class="small">Nhập thêm sách →</a>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">Doanh thu 7 ngày</h6>
+                <div class="bar-chart">
+                    {% for item in chart %}
+                    <div class="bar-col" title="{{ item.label }}: {{ item.value | vnd }}">
+                        <div class="bar" data-percent="{{ item.percent }}"></div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="bar-labels mt-1">
+                    {% for item in chart %}
+                        <span>{{ item.label }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelectorAll(".bar[data-percent]").forEach(function (bar) {
+        bar.style.height = bar.dataset.percent + "%";
+    });
+</script>
+{% endblock %}
